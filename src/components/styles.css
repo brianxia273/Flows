@@ -1,0 +1,122 @@
+/* COLORS
+
+STUDY
+Primary: #2575fc, #9258d1
+Mix: #5d66e7
+Tints:
+Shades: #383d8b
+
+GYM
+Primary: #e53935, #ff7043
+Mix: #f2533b
+Tints: 
+Shades: #913223 
+
+ART
+Primary: #ffec61, #ffb74d
+Mix: #ffd357
+Tints:
+Shades: #997f34 #b3943d, #806a2c
+
+GRAY - #ebf6f9
+BLACK - #0e1111
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap");
+
+.hero-text {
+  font-size: 4rem;
+  text-align: center;
+  font-weight: 100;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 24 #0e1111;
+}
+
+.flows-text {
+  font-size: 10rem;
+  text-align: center;
+  font-weight: 250;
+  background: linear-gradient(45deg, #2575fc, #9258d1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  line-height: 0.96;
+}
+
+.flows-description-text {
+  font-weight: 250;
+  text-shadow: 0 0 24px #0e1111;
+  font-size: 1.05rem;
+}
+
+.home-text {
+  color: #ebf6f9;
+  font-family: "Inter", sans-serif;
+}
+
+.login-text {
+  color: #0e1111;
+  font-family: "Inter", sans-serif;
+}
+
+.dashboard-text {
+  color: #ebf6f9;
+  font-family: "Inter", sans-serif;
+}
+
+.logo-text {
+  font-size: 1.6rem;
+  font-weight: 250;
+  padding-left: 42;
+  letter-spacing: 1px;
+}
+
+.login-text {
+  transition: 0.3s ease;
+}
+
+.login-text:hover {
+  cursor: pointer;
+}
+
+.start-button {
+  width: 200;
+  height: 60;
+  font-weight: 250;
+  font-size: 1.1rem;
+  background-color: #5d66e7;
+  box-shadow: 0 0 10px #5d66e7;
+  text-shadow: 0 0 24px #0e1111;
+}
+
+.start-button:hover {
+  background-color: #383d8b;
+  cursor: pointer;
+}
+
+.flow-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7rem;
+}
+
+.arrow-buttons {
+  background: none;
+  margin-top: 2.5rem;
+}
+
+.arrow-buttons:hover {
+  cursor: pointer;
+}
+
+.menu-text {
+  font-size: 0.8rem;
+}
+
+.flow-header-text {
+  font-size: 3rem;
+  font-weight: 300;
+}
