@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
-export function Dashboard({ flows }: { flows: any[] }) {
+export function Dashboard() {
   const flowCount: number = 1;
   const hasNoFlows: boolean = flowCount === 0;
   const [isBHovered, setIsBHovered] = useState(false);
