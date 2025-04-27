@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { PreferenceChart } from "@/components/preference-chart";
 import { SongSelect } from "@/components/song-select";
+import { SongTable } from "@/components/song-table";
 
 export function Dashboard() {
   const flowCount: number = 1;
@@ -52,7 +53,10 @@ export function Dashboard() {
           </header>
           <div className="flex">
             <PreferenceChart />
-            <SongSelect />
+            <div className="flex flex-col">
+              <SongTable />
+              <SongSelect />
+            </div>
           </div>
         </div>
       )}

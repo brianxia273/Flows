@@ -14,19 +14,34 @@ import "./styles.css";
 import { BsSoundwave } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import LoginButton from "./loginButton";
+import { FormEvent, useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase/clientApp";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSignupClick = () => {
     router.push("/signup");
   };
 
-  const handleDashboardClick = () => {
-    router.push("/dashboard");
+  const handleEmailLogin = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setError(error.message || "Failed to login");
+    }
   };
 
   return (
@@ -53,7 +68,7 @@ export function LoginForm({
           <CardDescription>Login with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleEmailLogin}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <LoginButton />
@@ -63,6 +78,9 @@ export function LoginForm({
                   Or continue with
                 </span>
               </div>
+              {error && (
+                <p className="text-red-500 text-sm text-center">{error}</p>
+              )}
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -70,6 +88,8 @@ export function LoginForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -77,7 +97,13 @@ export function LoginForm({
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
                 <Button type="submit" className="w-full">
                   Login
@@ -86,8 +112,8 @@ export function LoginForm({
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <a
-                  onClick={handleDashboardClick} // temporary
-                  className="underline underline-offset-4"
+                  onClick={handleSignupClick}
+                  className="underline underline-offset-4 cursor-pointer"
                 >
                   Sign up
                 </a>
