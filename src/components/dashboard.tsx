@@ -10,6 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import { PreferenceChart } from "@/components/preference-chart";
+import { SongSelect } from "@/components/song-select";
 
 export function Dashboard() {
   const flowCount: number = 1;
@@ -44,11 +46,14 @@ export function Dashboard() {
               position: "relative",
             }}
           >
-            <div className="absolute bottom-2 left-10 text-white font-semibold flow-header-text">
+            <div className="absolute bottom-2 left-10 text-white font-semibold flow-header-text drop-shadow-[0_0_20px_#ffffff]">
               Study Flow
             </div>
           </header>
-          <div className="flex"></div>
+          <div className="flex">
+            <PreferenceChart />
+            <SongSelect />
+          </div>
         </div>
       )}
     </div>

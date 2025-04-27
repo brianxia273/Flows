@@ -18,7 +18,7 @@ Mix: #ffd357
 Tints:
 Shades: #997f34 #b3943d, #806a2c
 
-GRAY - #ebf6f9
+GRAY - #ebf6f9, #1e2424
 BLACK - #0e1111
 */
 
@@ -31,6 +31,10 @@ BLACK - #0e1111
   background-clip: text;
   color: transparent;
   text-shadow: 0 0 24 #0e1111;
+}
+
+.font {
+  font-family: "Inter", sans-serif;
 }
 
 .flows-text {
