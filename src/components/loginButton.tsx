@@ -1,44 +1,28 @@
 "use client";
 
 import React from "react";
-import { auth, firestore } from "../../firebase/clientApp";
+import { auth, db, signInWithGoogle } from "../../firebase/clientApp";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useEffect } from "react";
+import { useAuth } from "@/components/auth-provider";
 
 const LoginButton: React.FC = () => {
   const router = useRouter();
+  const { user, loading } = useAuth();
 
-  const handleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      const userRef = doc(firestore, "users", user.uid);
-      const userDoc = await getDoc(userRef);
-
-      // Check if user exists in Firestore
-      if (!userDoc.exists()) {
-        // Create new user document
-        const userProfile = {
-          email: user.email,
-          displayName: user.displayName,
-          createdAt: new Date(),
-          flows: [],
-        };
-
-        await setDoc(userRef, userProfile);
-        console.log("New user profile created:", userProfile);
-      } else {
-        console.log("Existing user logged in:", user.email);
-      }
-
+  useEffect(() => {
+    if (!loading && user) {
       router.push("/dashboard");
+    }
+  }, [user, loading, router]);
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error("Sign-in failed:", error);
     }
   };
 

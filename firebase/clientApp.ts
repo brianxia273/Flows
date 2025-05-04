@@ -1,6 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -13,8 +19,37 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 
-export { auth, firestore };
+const providers = {
+  google: new GoogleAuthProvider(),
+};
+
+const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      const userProfile = {
+        email: user.email,
+        createdAt: new Date(),
+        flows: [],
+      };
+      await setDoc(userRef, userProfile);
+    }
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const signOutFirebase = () => {
+  signOut(auth);
+};
+
+export { db, auth, signInWithGoogle, signOutFirebase as signOut };
