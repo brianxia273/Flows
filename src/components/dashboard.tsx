@@ -11,13 +11,31 @@ import {
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { PreferenceChart } from "@/components/preference-chart";
-import { SongSelect } from "@/components/song-select";
-import { SongTable } from "@/components/song-table";
+import { FlowCreate } from "./flow-create";
+import { useAuth } from "@/components/auth-provider";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/clientApp";
 
 export function Dashboard() {
-  const flowCount: number = 1;
+  const { user, loading, error } = useAuth();
+  const [flows, setFlows] = useState<any[]>([]);
+
+  const flowCount: number = flows.length;
   const hasNoFlows: boolean = flowCount === 0;
   const [isBHovered, setIsBHovered] = useState(false);
+
+  useEffect(() => {
+    const fetchFlows = async () => {
+      if (user && !loading) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          setFlows(userData.flows || []);
+        }
+      }
+    };
+  });
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
@@ -27,16 +45,7 @@ export function Dashboard() {
             <CardTitle>Welcome to Flows!</CardTitle>
           </h1>
           <h2 className="mb-7">Let’s get you started with your first Flow.</h2>
-          <Button
-            onMouseEnter={() => setIsBHovered(true)}
-            onMouseLeave={() => setIsBHovered(false)}
-            style={{
-              background: isBHovered ? "#383d8b" : "#5d66e7",
-              boxShadow: "0 0 5px #5d66e7",
-            }}
-          >
-            Create Flow
-          </Button>
+          <FlowCreate></FlowCreate>
         </div>
       ) : (
         <div className="relative bg-[#1e2424] h-[95%] w-[100%] dashboard-text flex flex-col items-center gap-5 rounded-2xl dashboard-text">
@@ -53,10 +62,7 @@ export function Dashboard() {
           </header>
           <div className="flex">
             <PreferenceChart />
-            <div className="flex flex-col">
-              <SongTable />
-              <SongSelect />
-            </div>
+            <div className="flex flex-col"></div>
           </div>
         </div>
       )}

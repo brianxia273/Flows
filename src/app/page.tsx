@@ -1,11 +1,12 @@
 import { Herocontent } from "@/components/hero-content";
 import { Footer } from "@/components/footer";
+import { AuthUserProvider } from "@/components/auth-provider";
 
 export default function Home() {
   return (
-    <div>
+    <AuthUserProvider>
       <Herocontent />
       <Footer />
-    </div>
+    </AuthUserProvider>
   );
 }

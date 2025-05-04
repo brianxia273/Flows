@@ -1,3 +1,4 @@
+"use client";
 import {
   Calendar,
   House,
@@ -10,6 +11,10 @@ import {
 } from "lucide-react";
 import { BsSoundwave } from "react-icons/bs";
 import "./styles.css";
+import { useEffect, useState } from "react";
+import { useAuth } from "./auth-provider";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/clientApp";
 
 const items = [
   {
@@ -40,6 +45,22 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const [flows, setFlows] = useState<any[]>([]);
+  const flowCount: number = flows.length;
+  const { user, loading, error } = useAuth();
+
+  useEffect(() => {
+    const fetchFlows = async () => {
+      if (user && !loading) {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          setFlows(userData.flows || []);
+        }
+      }
+    };
+  });
   return (
     <div className="flex flex-col w-[20%] h-[95%] bg-[#1e2424] shadow-none rounded-2xl">
       <div className="mt-6 px-6">
@@ -73,7 +94,9 @@ export function AppSidebar() {
                 <span>{item.title}</span>
               </div>
               {item.title === "Your Flows" && (
-                <span className="pr-6 dashboard-text px-2 py-0.5">3</span>
+                <span className="pr-6 dashboard-text px-2 py-0.5">
+                  {flowCount}
+                </span>
               )}
             </a>
           </div>

@@ -12,12 +12,14 @@ import { motion } from "framer-motion";
 export function Herocontent() {
   const router = useRouter();
 
-  const handleLoginClick = () => {
-    router.push("/login");
+  const handleLoginClick = async () => {
+    setLoading(true);
+    await router.push("/login");
   };
 
-  const handleSignupClick = () => {
-    router.push("/signup");
+  const handleSignupClick = async () => {
+    setLoading(true);
+    await router.push("/signup");
   };
 
   const flowGradients: string[] = [
@@ -66,6 +68,7 @@ export function Herocontent() {
   const [isBHovered, setIsBHovered] = useState(false);
   const [isLAHovered, setIsLAHovered] = useState(false);
   const [isRAHovered, setIsRAHovered] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   return (
     <div>
@@ -225,7 +228,7 @@ export function Herocontent() {
                 boxShadow: buttonShadow[index],
               }}
             >
-              Get Started
+              {loading ? "Loading" : "Get Started"}
             </Button>
           </div>
         </motion.div>
