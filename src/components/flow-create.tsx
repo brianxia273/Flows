@@ -16,6 +16,8 @@ import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/clientApp";
 import { ThemeButton } from "./theme-button";
 import { X } from "lucide-react";
+import { PreferencePieChart } from "@/components/pie-chart";
+import { serverTimestamp } from "firebase/firestore";
 
 export function FlowCreate() {
   const [isBHovered, setIsBHovered] = useState(false);
@@ -122,84 +124,101 @@ export function FlowCreate() {
     }
   };
 
-  const getAudioFeatures = async (trackID: string) => {
-    const accessToken = await getSpotifyToken();
-    const response = await fetch(
-      `https://api.spotify.com/v1/audio-features/${trackID}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`AudioFeatures error: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
-  type AudioFeature = {
-    id: string;
-    acousticness: number;
-    danceability: number;
-    energy: number;
-    instrumentalness: number;
-    loudness: number;
-    speechiness: number;
-    tempo: number;
-    valence: number;
-  };
+  // const getAudioFeatures = async (trackID: string) => {
+  //   setErrorMessage("");
+  //   const token = await getSpotifyToken();
+  //   try {
+  //     const res = await fetch(
+  //       `https://api.spotify.com/v1/audio-features/${trackID}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     if (!res.ok) {
+  //       throw new Error(`AudioFeatures error: ${res.status}`);
+  //     }
+  //     const data = await res.json();
+  //     return data;
+  //   } catch (error) {
+  //     console.error("getAudioFeatures failed", error);
+  //     throw error;
+  //   }
+  // };
 
-  const FEATURES = [
-    "acousticness",
-    "danceability",
-    "energy",
-    "instrumentalness",
-    "loudness",
-    "speechiness",
-    "tempo",
-    "valence",
-  ] as const;
+  // type AudioFeature = {
+  //   id: string;
+  //   acousticness: number;
+  //   danceability: number;
+  //   energy: number;
+  //   instrumentalness: number;
+  //   loudness: number;
+  //   speechiness: number;
+  //   tempo: number;
+  //   valence: number;
+  // };
 
-  type FeatureKey = (typeof FEATURES)[number];
+  // const FEATURES = [
+  //   "acousticness",
+  //   "danceability",
+  //   "energy",
+  //   "instrumentalness",
+  //   "loudness",
+  //   "speechiness",
+  //   "tempo",
+  //   "valence",
+  // ] as const;
 
-  const calculateFeatureWeights = async (
-    flowSongs: { id: string }[],
-    getAudioFeatures: (trackID: string) => Promise<AudioFeature>
-  ): Promise<Record<FeatureKey, number>> => {
-    const allFeatures: AudioFeature[] = await Promise.all(
-      flowSongs.map((song) => getAudioFeatures(song.id))
-    );
+  // type FeatureKey = (typeof FEATURES)[number];
 
-    const featureValues: Record<FeatureKey, number[]> = {} as any;
-    FEATURES.forEach((f) => (featureValues[f] = []));
+  // const calculateFeatureWeights = async (
+  //   flowSongs: { id: string }[],
+  //   getAudioFeatures: (trackID: string) => Promise<AudioFeature>
+  // ): Promise<Record<FeatureKey, number>> => {
+  //   const allFeatures: AudioFeature[] = await Promise.all(
+  //     flowSongs.map((song) => getAudioFeatures(song.id))
+  //   );
 
-    for (const songFeatures of allFeatures) {
-      FEATURES.forEach((f) => {
-        featureValues[f].push(songFeatures[f]);
-      });
-    }
+  //   const featureValues: Record<FeatureKey, number[]> = {} as any;
+  //   FEATURES.forEach((f) => (featureValues[f] = []));
 
-    const rawWeights: Record<FeatureKey, number> = {} as any;
-    FEATURES.forEach((f) => {
-      const values = featureValues[f];
-      const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
-      const variance =
-        values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
-        values.length;
-      rawWeights[f] = 1 / (variance + 1e-6);
-    });
+  //   for (const songFeatures of allFeatures) {
+  //     FEATURES.forEach((f) => {
+  //       featureValues[f].push(songFeatures[f]);
+  //     });
+  //   }
 
-    const totalWeight = Object.values(rawWeights).reduce(
-      (sum, w) => sum + w,
-      0
-    );
-    const normalizedWeights: Record<FeatureKey, number> = {} as any;
-    FEATURES.forEach((f) => {
-      normalizedWeights[f] = rawWeights[f] / totalWeight;
-    });
+  //   const rawWeights: Record<FeatureKey, number> = {} as any;
+  //   FEATURES.forEach((f) => {
+  //     const values = featureValues[f];
+  //     const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+  //     const variance =
+  //       values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
+  //       values.length;
+  //     rawWeights[f] = 1 / (variance + 1e-6);
+  //   });
 
-    return normalizedWeights;
+  //   const totalWeight = Object.values(rawWeights).reduce(
+  //     (sum, w) => sum + w,
+  //     0
+  //   );
+  //   const normalizedWeights: Record<FeatureKey, number> = {} as any;
+  //   FEATURES.forEach((f) => {
+  //     normalizedWeights[f] = rawWeights[f] / totalWeight;
+  //   });
+
+  //   return normalizedWeights;
+  // };
+  const examplePreference = {
+    acousticness: 0.08,
+    danceability: 0.22,
+    energy: 0.18,
+    instrumentalness: 0.1,
+    loudness: 0.15,
+    speechiness: 0.05,
+    tempo: 0.12,
+    valence: 0.1,
   };
 
   useEffect(() => {
@@ -259,7 +278,7 @@ export function FlowCreate() {
       theme: flowTheme,
       songs: flowSongs,
       preferences: flowPreference,
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
     };
   };
 
@@ -522,15 +541,13 @@ export function FlowCreate() {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  const songIds = flowSongs.map((song) => ({ id: song.id }));
-                  const preferences = await calculateFeatureWeights(
-                    songIds,
-                    getAudioFeatures
-                  );
-                  console.log("Calculated preferences:", preferences);
-                  setFlowPreference(preferences);
+                  // const preferences = await calculateFeatureWeights(
+                  //   flowSongs,
+                  //   getAudioFeatures
+                  // );
+                  setFlowPreference(examplePreference);
                 } catch (error) {
-                  console.log("no work");
+                  console.log("Preference failed");
                 }
 
                 setOpenStage3(false);
@@ -546,10 +563,10 @@ export function FlowCreate() {
       <Dialog open={openStage4} onOpenChange={setOpenStage4}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>4. Your Flow Factors</DialogTitle>
+            <DialogTitle>4. Your Flow Factors *placehold</DialogTitle>
             <div className="grid grid-cols-4 justify-center mt-10 mb-5"></div>
           </DialogHeader>
-          <div>{JSON.stringify(flowPreference, null, 2)}</div>{" "}
+          <PreferencePieChart preferences={examplePreference} />
           <DialogFooter>
             <Button
               onClick={() => {
@@ -566,10 +583,18 @@ export function FlowCreate() {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  await addDoc(
-                    collection(db, "flows"),
-                    makeFlow(flowName, flowTheme, flowSongs, flowPreference)
+                  const flowData = makeFlow(
+                    flowName,
+                    flowTheme,
+                    flowSongs,
+                    flowPreference
                   );
+                  console.log("Submitting flow:", flowData);
+                  const docRef = await addDoc(
+                    collection(db, "flows"),
+                    flowData
+                  );
+                  console.log("Document written with ID:", docRef.id);
                   setSongSelected([]);
                   setFlowSongs([]);
                   setFlowName("");
@@ -578,6 +603,8 @@ export function FlowCreate() {
                   setOpenStage4(false);
                   setLoading(false);
                 } catch (error) {
+                  console.error("Error adding document:", error);
+                } finally {
                   setLoading(false);
                 }
               }}
