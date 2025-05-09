@@ -20,7 +20,7 @@ export function Dashboard() {
   const { user, loading, error } = useAuth();
   const [flows, setFlows] = useState<any[]>([]);
 
-  const flowCount: number = flows.length;
+  const flowCount: number = 0;
   const hasNoFlows: boolean = flowCount === 0;
   const [isBHovered, setIsBHovered] = useState(false);
 
