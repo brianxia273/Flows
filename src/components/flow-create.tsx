@@ -124,92 +124,92 @@ export function FlowCreate() {
     }
   };
 
-  // const getAudioFeatures = async (trackID: string) => {
-  //   setErrorMessage("");
-  //   const token = await getSpotifyToken();
-  //   try {
-  //     const res = await fetch(
-  //       `https://api.spotify.com/v1/audio-features/${trackID}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     if (!res.ok) {
-  //       throw new Error(`AudioFeatures error: ${res.status}`);
-  //     }
-  //     const data = await res.json();
-  //     return data;
-  //   } catch (error) {
-  //     console.error("getAudioFeatures failed", error);
-  //     throw error;
-  //   }
-  // };
+  const getAudioFeatures = async (trackID: string) => {
+    setErrorMessage("");
+    const token = await getSpotifyToken();
+    try {
+      const res = await fetch(
+        `https://api.spotify.com/v1/audio-features/${trackID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) {
+        throw new Error(`AudioFeatures error: ${res.status}`);
+      }
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error("getAudioFeatures failed", error);
+      throw error;
+    }
+  };
 
-  // type AudioFeature = {
-  //   id: string;
-  //   acousticness: number;
-  //   danceability: number;
-  //   energy: number;
-  //   instrumentalness: number;
-  //   loudness: number;
-  //   speechiness: number;
-  //   tempo: number;
-  //   valence: number;
-  // };
+  type AudioFeature = {
+    id: string;
+    acousticness: number;
+    danceability: number;
+    energy: number;
+    instrumentalness: number;
+    loudness: number;
+    speechiness: number;
+    tempo: number;
+    valence: number;
+  };
 
-  // const FEATURES = [
-  //   "acousticness",
-  //   "danceability",
-  //   "energy",
-  //   "instrumentalness",
-  //   "loudness",
-  //   "speechiness",
-  //   "tempo",
-  //   "valence",
-  // ] as const;
+  const FEATURES = [
+    "acousticness",
+    "danceability",
+    "energy",
+    "instrumentalness",
+    "loudness",
+    "speechiness",
+    "tempo",
+    "valence",
+  ] as const;
 
-  // type FeatureKey = (typeof FEATURES)[number];
+  type FeatureKey = (typeof FEATURES)[number];
 
-  // const calculateFeatureWeights = async (
-  //   flowSongs: { id: string }[],
-  //   getAudioFeatures: (trackID: string) => Promise<AudioFeature>
-  // ): Promise<Record<FeatureKey, number>> => {
-  //   const allFeatures: AudioFeature[] = await Promise.all(
-  //     flowSongs.map((song) => getAudioFeatures(song.id))
-  //   );
+  const calculateFeatureWeights = async (
+    flowSongs: { id: string }[],
+    getAudioFeatures: (trackID: string) => Promise<AudioFeature>
+  ): Promise<Record<FeatureKey, number>> => {
+    const allFeatures: AudioFeature[] = await Promise.all(
+      flowSongs.map((song) => getAudioFeatures(song.id))
+    );
 
-  //   const featureValues: Record<FeatureKey, number[]> = {} as any;
-  //   FEATURES.forEach((f) => (featureValues[f] = []));
+    const featureValues: Record<FeatureKey, number[]> = {} as any;
+    FEATURES.forEach((f) => (featureValues[f] = []));
 
-  //   for (const songFeatures of allFeatures) {
-  //     FEATURES.forEach((f) => {
-  //       featureValues[f].push(songFeatures[f]);
-  //     });
-  //   }
+    for (const songFeatures of allFeatures) {
+      FEATURES.forEach((f) => {
+        featureValues[f].push(songFeatures[f]);
+      });
+    }
 
-  //   const rawWeights: Record<FeatureKey, number> = {} as any;
-  //   FEATURES.forEach((f) => {
-  //     const values = featureValues[f];
-  //     const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
-  //     const variance =
-  //       values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
-  //       values.length;
-  //     rawWeights[f] = 1 / (variance + 1e-6);
-  //   });
+    const rawWeights: Record<FeatureKey, number> = {} as any;
+    FEATURES.forEach((f) => {
+      const values = featureValues[f];
+      const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+      const variance =
+        values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
+        values.length;
+      rawWeights[f] = 1 / (variance + 1e-6);
+    });
 
-  //   const totalWeight = Object.values(rawWeights).reduce(
-  //     (sum, w) => sum + w,
-  //     0
-  //   );
-  //   const normalizedWeights: Record<FeatureKey, number> = {} as any;
-  //   FEATURES.forEach((f) => {
-  //     normalizedWeights[f] = rawWeights[f] / totalWeight;
-  //   });
+    const totalWeight = Object.values(rawWeights).reduce(
+      (sum, w) => sum + w,
+      0
+    );
+    const normalizedWeights: Record<FeatureKey, number> = {} as any;
+    FEATURES.forEach((f) => {
+      normalizedWeights[f] = rawWeights[f] / totalWeight;
+    });
 
-  //   return normalizedWeights;
-  // };
+    return normalizedWeights;
+  };
   const examplePreference = {
     acousticness: 0.08,
     danceability: 0.22,
@@ -541,10 +541,10 @@ export function FlowCreate() {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  // const preferences = await calculateFeatureWeights(
-                  //   flowSongs,
-                  //   getAudioFeatures
-                  // );
+                  const preferences = await calculateFeatureWeights(
+                    flowSongs,
+                    getAudioFeatures
+                  );
                   setFlowPreference(examplePreference);
                 } catch (error) {
                   console.log("Preference failed");
